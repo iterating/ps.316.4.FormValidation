@@ -1,14 +1,14 @@
-const registrationForm = document.getElementById("registration");
 
 function showErrors(errors) {
-  const errorDisplay = document.getElementById("errorDisplay");
-  errorDisplay.innerHTML = errors.join("<br>");
-  errorDisplay.style.display = "block";
+    const errorDisplay = document.getElementById("errorDisplay");
+    errorDisplay.innerHTML = errors.join("<br>");
+    errorDisplay.style.display = "block";
 }
+
+const registrationForm = document.getElementById("registration");
 registrationForm.addEventListener("submit", function (e) {
   e.preventDefault();
   let errors = [];
-
   try {
     // Make a object from the form
     const formData = new FormData(registrationForm);
@@ -34,6 +34,10 @@ registrationForm.addEventListener("submit", function (e) {
       {
         test: () => new Set(username).size < 2,
         message: "Username must have two unique characters.",
+      },
+      {
+        test: () => localStorage.getItem(username),
+        message: "That username is already taken.",
       },
     ];
 
@@ -107,7 +111,6 @@ registrationForm.addEventListener("submit", function (e) {
     }
 
     // Registration Form - Form Submission:
-    // Usually, we would send this information to an external API for processing. In our case, we are going to process and store the data locally for practice purposes.
     // If all validation is successful, store the username, email, and password using localStorage.
     // Consider how you want to store the user data, keeping in mind that there will be quite a few users registering for the site. Perhaps you want to store it with an array of user objects; or maybe an object whose keys are the usernames themselves.
     // Valid usernames should be converted to all lowercase before being stored.
@@ -116,15 +119,15 @@ registrationForm.addEventListener("submit", function (e) {
     if (errors.length === 0) {
       console.log("Passed!");
     //   errorDisplay.style.display = "none";
-    let userId = Date.now().toString();
+    // let userId = Date.now().toString(); //Difficult to implement checking for duplicate usernames
+    username=: username.toLowerCase(),
     let userData = {
-        username : username.toLowerCase(),
         email: formData.get("email").toLowerCase(),
         password: password,
         //is there a way to encrypt the password?
       };
       
-      localStorage.setItem(userId, JSON.stringify(userData));
+      localStorage.setItem(username, JSON.stringify(userData));
 
       errorDisplay.innerHTML="Success!"
     } else {
@@ -135,11 +138,9 @@ registrationForm.addEventListener("submit", function (e) {
   }
 });
 
-const loginForm = document.getElementById("login");
 
-// Registration Form - Username Validation (Part Two):
-// Now that we are storing usernames, create an additional validation rule for them...
-// Usernames must be unique ("that username is already taken" error). Remember that usernames are being stored all lowercase, so "learner" and "Learner" are not unique.
+
+// [x] Usernames must be unique ("that username is already taken" error). Remember that usernames are being stored all lowercase, so "learner" and "Learner" are not unique.
 
 // Part 4: Login Form Validation Requirements
 // For the Login Form section of the page, implement the following validation requirements:
@@ -149,7 +150,33 @@ const loginForm = document.getElementById("login");
 // Login Form - Password Validation:
 // The password cannot be blank.
 // The password must be correct (validate against localStorage).
+const loginForm = document.getElementById("login");
+loginForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+  let errors = [];
+  try {
+    const formData = new FormData(loginForm);
+    let username = formData.get("username");
+    const usernameValidation = [
+      {
+        test: () => !username,
+        message: "The username cannot be blank.",
+      },
+      {
+        test: () => !localStorage.getItem(username),
+        message: "The username must exist.",
+      },
+    ];
+    usernameValidation.forEach((validation) => {
+      if (validation.test()) {
+        errors.push(validation.message);
+      }
+    });
 
+    const userData = JSON.parse(localStorage.getItem(username));
+    if (userData.password !== password) {
+      errors.push("Incorrect password.");
+    }
 // Login Form - Form Submission:
 
 // If all validation is successful, clear all form fields and show a success message.
