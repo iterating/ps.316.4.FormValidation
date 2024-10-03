@@ -116,10 +116,15 @@ registrationForm.addEventListener("submit", function (e) {
     if (errors.length === 0) {
       console.log("Passed!");
     //   errorDisplay.style.display = "none";
-      username = username.toLowerCase()
-      let email = formData.get("email").toLowerCase()
-
-      localStorage.setItem(username, {username, email, password})
+    let userId = Date.now().toString();
+    let userData = {
+        username : username.toLowerCase(),
+        email: formData.get("email").toLowerCase(),
+        password: password,
+        //is there a way to encrypt the password?
+      };
+      
+      localStorage.setItem(userId, JSON.stringify(userData));
 
       errorDisplay.innerHTML="Success!"
     } else {
