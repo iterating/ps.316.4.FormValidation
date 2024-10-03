@@ -1,13 +1,11 @@
-
 function showErrors(errors) {
-    const errorDisplay = document.getElementById("errorDisplay");
-    errorDisplay.innerHTML = errors.join("<br>");
-    errorDisplay.style.display = "block";
+  const errorDisplay = document.getElementById("errorDisplay");
+  errorDisplay.innerHTML = errors.join("<br>");
+  errorDisplay.style.display = "block";
 }
 
-let userArray = []
-localStorage.setItem("users", JSON.stringify(userArray))
-
+let userArray = [];
+localStorage.setItem("users", JSON.stringify(userArray));
 
 const registrationForm = document.getElementById("registration");
 registrationForm.addEventListener("submit", function (e) {
@@ -122,20 +120,19 @@ registrationForm.addEventListener("submit", function (e) {
     // Clear all form fields after successful submission and show a success message.
     if (errors.length === 0) {
       console.log("Passed!");
-    //   errorDisplay.style.display = "none";
-    let userData = {
-        userId : Date.now().toString(), //Difficult to implement checking for duplicate usernames
-        username : username.toLowerCase(),
+      //   errorDisplay.style.display = "none";
+      let userData = {
+        userId: Date.now().toString(), //Difficult to implement checking for duplicate usernames
+        username: username.toLowerCase(),
         email: formData.get("email").toLowerCase(),
         password: password,
         //is there a way to encrypt the password?
       };
       userArray.push(userData);
-      localStorage.setItem("users", JSON.stringify(userArray))
+      localStorage.setItem("users", JSON.stringify(userArray));
 
-      errorDisplay.innerHTML="Success!"
+      errorDisplay.innerHTML = "Success!";
       registrationForm.reset();
-
     } else {
       showErrors(errors);
     }
@@ -143,8 +140,6 @@ registrationForm.addEventListener("submit", function (e) {
     console.log(error);
   }
 });
-
-
 
 // [x] Usernames must be unique ("that username is already taken" error). Remember that usernames are being stored all lowercase, so "learner" and "Learner" are not unique.
 
@@ -166,14 +161,14 @@ loginForm.addEventListener("submit", function (e) {
     let password = formData.get("password");
 
     let userList = JSON.parse(localStorage.getItem("users"));
-        
+
     const usernameValidation = [
       {
         test: () => !username,
         message: "The username cannot be blank.",
       },
       {
-        test: () => !userList.find(user => user.username === username),
+        test: () => !userList.find((user) => user.username === username),
         message: "The username must exist.",
       },
     ];
@@ -184,30 +179,27 @@ loginForm.addEventListener("submit", function (e) {
     });
 
     if (!password) {
-        errors.push("The password cannot be blank.");
+      errors.push("The password cannot be blank.");
+    }
 
-      }
-
-
-      const user = userList.find(user => user.username === username);
-      if (user && user.password !== password) {
-        errors.push("Incorrect password.");
+    const user = userList.find((user) => user.username === username);
+    if (user && user.password !== password) {
+      errors.push("Incorrect password.");
     }
 
     if (errors.length === 0) {
-        console.log("Passed!");
-        const errorDisplay = document.getElementById("errorDisplay");
-        errorDisplay.innerHTML="Success!"
-        
-        if (formData.get("check")) { 
-            errorDisplayinnerHTML+=  " You will be kept logged in.";
-        }
-        loginForm.reset();
-
-    } else {
-        showErrors(errors);
+      console.log("Passed!");
+      const errorDisplay = document.getElementById("errorDisplay");
+      errorDisplay.innerHTML = "Success!";
+      console.log(formData);
+      if (formData.get("persist")) {
+        errorDisplay.innerHTML += " You will be kept logged in.";
       }
-} catch (error) {
+      loginForm.reset();
+    } else {
+      showErrors(errors);
+    }
+  } catch (error) {
     console.log(error);
   }
 });
