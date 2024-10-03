@@ -16,7 +16,7 @@ registrationForm.addEventListener("submit", function (e) {
     // The username must be at least four characters long.
     // The username must contain at least two unique characters.
     // The username cannot contain any special characters or whitespace.
-    const username = formData.get("username");
+    let username = formData.get("username");
     const usernameValidation = [
       {
         test: () => !username,
@@ -115,7 +115,13 @@ registrationForm.addEventListener("submit", function (e) {
     // Clear all form fields after successful submission and show a success message.
     if (errors.length === 0) {
       console.log("Passed!");
-      errorDisplay.style.display = "none";
+    //   errorDisplay.style.display = "none";
+      username = username.toLowerCase()
+      let email = formData.get("email").toLowerCase()
+
+      localStorage.setItem(username, {username, email, password})
+
+      errorDisplay.innerHTML="Success!"
     } else {
       showErrors(errors);
     }
