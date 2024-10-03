@@ -5,6 +5,10 @@ function showErrors(errors) {
     errorDisplay.style.display = "block";
 }
 
+let userArray = []
+localStorage.setItem("users", JSON.stringify(userArray))
+
+
 const registrationForm = document.getElementById("registration");
 registrationForm.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -119,17 +123,19 @@ registrationForm.addEventListener("submit", function (e) {
     if (errors.length === 0) {
       console.log("Passed!");
     //   errorDisplay.style.display = "none";
-    // let userId = Date.now().toString(); //Difficult to implement checking for duplicate usernames
-    username=: username.toLowerCase(),
     let userData = {
+        userId : Date.now().toString(), //Difficult to implement checking for duplicate usernames
+        username : username.toLowerCase(),
         email: formData.get("email").toLowerCase(),
         password: password,
         //is there a way to encrypt the password?
       };
-      
-      localStorage.setItem(username, JSON.stringify(userData));
+      userArray.push(userData);
+      localStorage.setItem("users", JSON.stringify(userArray))
 
       errorDisplay.innerHTML="Success!"
+      registrationForm.reset();
+
     } else {
       showErrors(errors);
     }
@@ -156,14 +162,18 @@ loginForm.addEventListener("submit", function (e) {
   let errors = [];
   try {
     const formData = new FormData(loginForm);
-    let username = formData.get("username");
+    let username = formData.get("username").toLowerCase();
+    let password = formData.get("password");
+
+    let userList = JSON.parse(localStorage.getItem("users"));
+        
     const usernameValidation = [
       {
         test: () => !username,
         message: "The username cannot be blank.",
       },
       {
-        test: () => !localStorage.getItem(username),
+        test: () => !userList.find(user => user.username === username),
         message: "The username must exist.",
       },
     ];
@@ -173,10 +183,34 @@ loginForm.addEventListener("submit", function (e) {
       }
     });
 
-    const userData = JSON.parse(localStorage.getItem(username));
-    if (userData.password !== password) {
-      errors.push("Incorrect password.");
+    if (!password) {
+        errors.push("The password cannot be blank.");
+
+      }
+
+
+      const user = userList.find(user => user.username === username);
+      if (user && user.password !== password) {
+        errors.push("Incorrect password.");
     }
+
+    if (errors.length === 0) {
+        console.log("Passed!");
+        const errorDisplay = document.getElementById("errorDisplay");
+        errorDisplay.innerHTML="Success!"
+        
+        if (formData.get("check")) { 
+            errorDisplayinnerHTML+=  " You will be kept logged in.";
+        }
+        loginForm.reset();
+
+    } else {
+        showErrors(errors);
+      }
+} catch (error) {
+    console.log(error);
+  }
+});
 // Login Form - Form Submission:
 
 // If all validation is successful, clear all form fields and show a success message.
