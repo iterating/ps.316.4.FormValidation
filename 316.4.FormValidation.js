@@ -16,20 +16,31 @@ registrationForm.addEventListener("submit", function (e) {
     // The username must be at least four characters long.
     // The username must contain at least two unique characters.
     // The username cannot contain any special characters or whitespace.
-    if (!formData.get("username")) {
-      errors.push("The username cannot be blank.");
-    }
-    if (formData.get("username").length < 4) {
-      errors.push("The username must be at least four characters long.");
-    }
-    if (/[^\w]/.test(formData.get("username"))) {
-      errors.push(
-        " The username cannot contain any special characters or whitespace."
-      );
-    }
-    if (new Set(formData.get("username")).size < 2) {
-      errors.push("Username must have two unique characters.");
-    }
+    const username = formData.get("username");    
+    const usernameValidation = [
+      {
+        test: () => !username,
+        message: "The username cannot be blank."
+      },
+      {
+        test: () => username.length < 4,
+        message: "The username must be at least four characters long."
+      },
+      {
+        test: () => /[^\w]/.test(username),
+        message: "The username cannot contain any special characters or whitespace."
+      },
+      {
+        test: () => new Set(username).size < 2,
+        message: "Username must have two unique characters."
+      }
+    ];
+    
+    usernameValidation.forEach(validation => {
+      if (validation.test()) {
+        errors.push(validation.message);
+      }
+    });
 
     // Registration Form - Email Validation:
     // The email must be a valid email address.
@@ -50,24 +61,44 @@ registrationForm.addEventListener("submit", function (e) {
       // Passwords cannot contain the word "password" (uppercase, lowercase, or mixed).
       // Passwords cannot contain the username.
       // Both passwords must match.
-    let password = formData.get("password")
-    if (formData.get("password").length < 12) {
-      errors.push("Passwords must be at least 12 characters long.");
-    }
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).+$/;
-    if (!passwordRegex.test.password) {
-        errors.push("The password must contain at least one uppercase and one lowercase letter.");
-    }
-    if (!/[0-9]/.test.password){
-        errors.push("Passwords must contain at least one number.");
-    }
-    if (!/[^\w\s]/.test.password){
-        errors.push("Passwords must contain at least one special character");
-    }
-        if (password.includes(username)){
-        errors.push("Passwords must contain at least one special character");
-    }
+      const passwordValidation = [
+        {
+          test: () => password.length < 12,
+          message: "Passwords must be at least 12 characters long."
+        },
+        {
+          test: () => !/[a-z]/.test(password) || !/[A-Z]/.test(password),
+          message: "The password must contain at least one uppercase and one lowercase letter."
+        },
+        {
+          test: () => !/[0-9]/.test(password),
+          message: "Passwords must contain at least one number."
+        },
+        {
+          test: () => !/[^\w\s]/.test(password),
+          message: "Passwords must contain at least one special character."
+        },
+        {
+          test: () => password.toLowerCase().includes("password"),
+          message: "Passwords cannot contain the word 'password' (uppercase, lowercase, or mixed)."
+        },
+        {
+          test: () => password.includes(username),
+          message: "Passwords cannot contain the username."
+        },
+        {
+          test: () => password !== confirmPassword,
+          message: "Both passwords must match."
+        }
+      ];
+      
+      passwordValidation.forEach(validation => {
+        if (validation.test()) {
+          errors.push(validation.message);
+        }
+
         
+      });
 
 
   } catch (error) {
