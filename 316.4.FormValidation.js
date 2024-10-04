@@ -4,8 +4,9 @@ function showErrors(errors) {
   errorDisplay.style.display = "block";
 }
 
-let userArray = [];
-localStorage.setItem("users", JSON.stringify(userArray));
+// Set new array as fallback option
+let userArray = JSON.parse(localStorage.getItem("users")) || [];
+
 
 const registrationForm = document.getElementById("registration");
 registrationForm.addEventListener("submit", function (e) {
@@ -36,11 +37,7 @@ registrationForm.addEventListener("submit", function (e) {
       {
         test: () => new Set(username).size < 2,
         message: "Username must have two unique characters.",
-      },
-      {
-        test: () => localStorage.getItem(username),
-        message: "That username is already taken.",
-      },
+      }
     ];
 
     usernameValidation.forEach((validation) => {
@@ -48,6 +45,12 @@ registrationForm.addEventListener("submit", function (e) {
         errors.push(validation.message);
       }
     });
+
+    let userList = JSON.parse(localStorage.getItem("users"))|| [];
+    if( userList.find((user) => user.username == username)
+    ){
+        errors.push("That username is already taken.");
+    }
 
     // Registration Form - Email Validation:
     // The email must be a valid email address.
@@ -182,7 +185,7 @@ loginForm.addEventListener("submit", function (e) {
       errors.push("The password cannot be blank.");
     }
 
-    const user = userList.find((user) => user.username === username);
+    const user = userList.find((user) => user.username == username);
     if (user && user.password !== password) {
       errors.push("Incorrect password.");
     }
