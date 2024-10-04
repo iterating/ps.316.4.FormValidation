@@ -140,7 +140,7 @@ registrationForm.addEventListener("submit", function (e) {
       showErrors(errors);
     }
   } catch (error) {
-    console.log(error);
+    errorDisplay.innerHTML += " An Error occured while sending form";
   }
 });
 
@@ -191,10 +191,9 @@ loginForm.addEventListener("submit", function (e) {
     }
 
     if (errors.length === 0) {
-      console.log("Passed!");
+    //   console.log("Passed!");
       const errorDisplay = document.getElementById("errorDisplay");
       errorDisplay.innerHTML = "Success!";
-      console.log(formData);
       if (formData.get("persist")) {
         errorDisplay.innerHTML += " You will be kept logged in.";
       }
@@ -203,6 +202,6 @@ loginForm.addEventListener("submit", function (e) {
       showErrors(errors);
     }
   } catch (error) {
-    console.log(error);
-  }
+    errorDisplay.innerHTML += " An Error occured while sending form";
+}
 })
